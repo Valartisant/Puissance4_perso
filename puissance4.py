@@ -1,5 +1,6 @@
 import os
 from random import randrange
+import subprocess
 
 
 # Définition des constantes
@@ -12,6 +13,7 @@ PION_JOUEUR_1 = "X"
 PION_JOUEUR_2 = "O"
 
 UTILISATION_APLHA_BETA = True
+AFFICHAGE_NBRE_COUPS_SIMULES = False
 
 
 class Grille(object):
@@ -651,8 +653,8 @@ class PartieConsole(object):
         if nbre_joueurs_humains == 0:
             profondeur = self._demander_profondeur_ia()
             if profondeur != -1:
-                self._joueur1 = IAMinMax(self._jeu, 'MinMax1', PION_JOUEUR_1, PION_JOUEUR_2, profondeur)
-                self._joueur2 = IAMinMax(self._jeu, 'MinMax2', PION_JOUEUR_2, PION_JOUEUR_1, profondeur)
+                self._joueur1 = IAMinMax(self._jeu, 'MinMax1', PION_JOUEUR_1, PION_JOUEUR_2, profondeur, UTILISATION_APLHA_BETA)
+                self._joueur2 = IAMinMax(self._jeu, 'MinMax2', PION_JOUEUR_2, PION_JOUEUR_1, profondeur, UTILISATION_APLHA_BETA)
             else:
                 self._joueur1 = IaAleatoire(self._jeu, 'Random1', PION_JOUEUR_1)
                 self._joueur2 = IaAleatoire(self._jeu, 'Random2', PION_JOUEUR_2)
@@ -665,7 +667,7 @@ class PartieConsole(object):
             profondeur = self._demander_profondeur_ia()
             self._joueur1 = JoueurHumain(self._jeu, nom, PION_JOUEUR_1)
             if profondeur != -1:
-                self._joueur2 = IAMinMax(self._jeu, 'MinMax', PION_JOUEUR_2, PION_JOUEUR_1, profondeur)
+                self._joueur2 = IAMinMax(self._jeu, 'MinMax', PION_JOUEUR_2, PION_JOUEUR_1, profondeur, UTILISATION_APLHA_BETA)
             else:
                 self._joueur2 = IaAleatoire(self._jeu, 'Random', PION_JOUEUR_2)
 
@@ -708,7 +710,11 @@ class PartieConsole(object):
             except ValueError:
                 print('Veuillez saisir un nombre entier !')
             else:
-                return profondeur
+                if profondeur < -1:
+                    print('Veuillez saisir une valeur correcte !')
+                    return self._demander_profondeur_ia()
+                else:
+                    return profondeur
 
     def jouer(self):
         """
@@ -812,6 +818,8 @@ class IAMinMax(object):
             # (si tous les coups possibles ont été testés la boucle s'arrête)
 
         # Parmi tous les coups possibles de l'IA on retourne le meilleur
+        if AFFICHAGE_NBRE_COUPS_SIMULES:
+            print(self.nbre_coups_simules)
         self.nbre_coups_simules = 0
         return coup_retenu.colonne
 
@@ -853,6 +861,8 @@ class IAMinMax(object):
             # (si tous les coups possibles ont été testés la boucle s'arrête)
 
         # Parmi tous les coups possibles de l'IA on retourne le meilleur
+        if AFFICHAGE_NBRE_COUPS_SIMULES:
+            print(self.nbre_coups_simules)
         self.nbre_coups_simules = 0
         return coup_retenu.colonne
 
@@ -1018,3 +1028,6 @@ class IAMinMax(object):
 puissance4 = Jeu()
 partie = PartieConsole(puissance4)
 partie.jouer()
+
+subprocess.call("welcome.py", shell=True)
+exit()
